@@ -27,6 +27,106 @@ Q-learning is a model-free reinforcement learning algorithm that enables the age
 4. Policy Extraction: Extract the learned policy from the Q-table, choosing actions with the highest Q-values.
 5. Repeat: Iterate through steps 2-4 until the agent converges to an optimal policy.
 
+## Methods
+
+- init Method:
+    The init method is a special method in Python that is called when an instance of a class is created. It's used for initializing the attributes and parameters of the class. In the context of a reinforcement learning agent, this method is often used to set up the agent's parameters and data structures when it is created.
+
+    ```python
+    class QLearningAgent:
+    def __init__(self, epsilon, alpha, gamma):
+        self.epsilon = epsilon  # Exploration-exploitation trade-off parameter
+        self.alpha = alpha      # Learning rate
+        self.gamma = gamma      # Discount factor
+        self.qValues = {}       # Dictionary to store Q-values
+
+    # Other initialization steps, if needed
+    ```
+
+- getQValue Method:
+    The getQValue method is typically used to retrieve the Q-value for a given state-action pair. In the context of Q-learning, the Q-value represents the expected cumulative reward of taking a specific action in a specific state.
+
+    ```python
+    class QLearningAgent:
+    # ...
+
+    def getQValue(self, state, action):
+        # Check if the Q-value is available, otherwise return a default value
+        return self.qValues.get((state, action), 0.0)
+
+    ```
+
+- computeValueFromQValue Method:
+    The computeValueFromQValue method is used to compute the state value from the Q-values. In Q-learning, the state value is the expected cumulative reward achievable from a given state by taking the best action. This method is essential for computing the state values during the learning process.
+
+    ```python
+    class QLearningAgent:
+    # ...
+
+    def computeValueFromQValues(self, state):
+        possibleActions = get_possible_actions(state)
+        if not possibleActions:
+            return 0.0  # Terminal state
+        # Return the maximum Q-value for the given state
+        return max(self.getQValue(state, action) for action in possibleActions)
+
+    ```    
+
+- computeActionFromQValues Method:
+    The computeActionFromQValues method is responsible for determining the best action to take in a given state based on the Q-values. In Q-learning, the agent chooses the action with the highest Q-value in a particular state. This method helps in extracting the optimal action for a given state during the decision-making process.
+
+    ```python
+    class QLearningAgent:
+    # ...
+
+    def computeActionFromQValues(self, state):
+        possibleActions = get_possible_actions(state)
+        if not possibleActions:
+            return None  # Terminal state
+        # Return the action with the highest Q-value for the given state
+        return max(possibleActions, key=lambda action: self.getQValue(state, action))
+
+    ```
+
+
+- getAction Method:
+    The getAction method is typically used during the decision-making process. It determines the action that the agent should take in a given state. This decision can be based on various strategies, such as choosing the action with the highest Q-value (exploitation) or exploring new actions with a certain probability (exploration).
+
+    ```python
+    class QLearningAgent:
+    # ...
+
+    def getAction(self, state):
+        possibleActions = get_possible_actions(state)
+        if not possibleActions:
+            return None  # Terminal state
+        # Exploration-exploitation trade-off
+        if random() < self.epsilon:
+            return random.choice(possibleActions)  # Exploration
+        else:
+            return self.computeActionFromQValues(state)  # Exploitation
+
+    ```
+
+- update Method:
+    The update method is a crucial part of the Q-learning algorithm. It is used to update the Q-values based on observed rewards and transitions. This method incorporates the reward obtained after taking an action in a state and updates the Q-value accordingly. The update process is usually guided by the Bellman equation, which reflects the relationship between the current state's Q-value and the Q-values of the next state and the immediate reward.
+
+    ```python
+    class QLearningAgent:
+    # ...
+
+    def update(self, state, action, nextState, reward):
+        # Update Q-value based on the Bellman equation
+        currentQValue = self.getQValue(state, action)
+        nextValue = self.computeValueFromQValues(nextState)
+        newQValue = (1 - self.alpha) * currentQValue + self.alpha * (reward + self.gamma * nextValue)
+        # Update the Q-value in the dictionary
+        self.qValues[(state, action)] = newQValue
+
+    ```
+
+These methods collectively define the behavior and learning process of a Q-learning agent in a reinforcement learning environment. The implementation details of these methods will depend on the specific Q-learning agent class being used.
+
 ## Usage
 
 You will need Pyhton 2.7 installed for the program to work. You can run it using the following command:
